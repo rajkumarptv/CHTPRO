@@ -9,6 +9,7 @@ import { ChitSettings } from './components/ChitSettings';
 import { Login } from './components/Login';
 import { AppData, PaymentStatus, Member, UserRole, AuthState, PaymentMethod } from './types';
 import { calculatePaymentDate } from './utils/dateUtils';
+import { CheckCircle2 } from 'lucide-react';
 
 const INITIAL_DATA: AppData = {
   config: {
@@ -44,6 +45,29 @@ const App: React.FC = () => {
   });
 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'payments' | 'members' | 'ai' | 'settings'>('dashboard');
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
+  // Check for Sync Link on Mount
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#data=')) {
+      try {
+        const encodedData = hash.replace('#data=', '');
+        const decodedData = JSON.parse(decodeURIComponent(atob(encodedData)));
+        
+        // Basic validation
+        if (decodedData.config && decodedData.members) {
+          setData(decodedData);
+          setSyncMessage('System Data Synced Successfully!');
+          // Clear hash from URL to keep it clean
+          window.history.replaceState(null, '', window.location.pathname);
+          setTimeout(() => setSyncMessage(null), 5000);
+        }
+      } catch (e) {
+        console.error('Failed to parse sync link:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('chittrack_data_v6', JSON.stringify(data));
@@ -149,7 +173,17 @@ const App: React.FC = () => {
   };
 
   if (!auth.isAuthenticated) {
-    return <Login data={data} onLogin={handleLogin} />;
+    return (
+      <>
+        {syncMessage && (
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 animate-in slide-in-from-top-4 duration-500">
+            <CheckCircle2 className="w-5 h-5" />
+            <span className="font-black text-xs uppercase tracking-widest">{syncMessage}</span>
+          </div>
+        )}
+        <Login data={data} onLogin={handleLogin} />
+      </>
+    );
   }
 
   return (
@@ -160,6 +194,16 @@ const App: React.FC = () => {
       userName={auth.userName}
       onLogout={handleLogout}
     >
+      {syncMessage && (
+        <div className="mb-6 bg-emerald-50 text-emerald-700 px-6 py-4 rounded-2xl border border-emerald-100 flex items-center justify-between animate-in fade-in duration-500">
+           <div className="flex items-center space-x-3">
+             <CheckCircle2 className="w-5 h-5" />
+             <span className="font-black text-xs uppercase tracking-widest">{syncMessage}</span>
+           </div>
+           <button onClick={() => setSyncMessage(null)} className="text-[10px] font-bold uppercase tracking-widest hover:underline">Dismiss</button>
+        </div>
+      )}
+
       {activeTab === 'dashboard' && <Dashboard data={data} />}
       {activeTab === 'payments' && (
         <PaymentGrid 
@@ -182,6 +226,7 @@ const App: React.FC = () => {
       {activeTab === 'settings' && (
         <ChitSettings 
           config={data.config} 
+          data={data}
           userRole={auth.role}
           onUpdateConfig={handleUpdateConfig}
           onLogout={handleLogout}
