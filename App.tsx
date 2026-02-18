@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Layout } from './components/Layout';
-import { Dashboard } from './components/Dashboard';
-import { PaymentGrid } from './components/PaymentGrid';
-import { MemberList } from './components/MemberList';
-import { AIInsights } from './components/AIInsights';
-import { ChitSettings } from './components/ChitSettings';
-import { Login } from './components/Login';
+import { Layout } from './components/Layout.tsx';
+import { Dashboard } from './components/Dashboard.tsx';
+import { PaymentGrid } from './components/PaymentGrid.tsx';
+import { MemberList } from './components/MemberList.tsx';
+import { AIInsights } from './components/AIInsights.tsx';
+import { ChitSettings } from './components/ChitSettings.tsx';
+import { Login } from './components/Login.tsx';
 import { AppData, PaymentStatus, Member, UserRole, AuthState, PaymentMethod } from './types';
 import { calculatePaymentDate } from './utils/dateUtils';
 
