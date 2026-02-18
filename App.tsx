@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Layout } from './components/Layout.tsx';
-import { Dashboard } from './components/Dashboard.tsx';
-import { PaymentGrid } from './components/PaymentGrid.tsx';
-import { MemberList } from './components/MemberList.tsx';
-import { AIInsights } from './components/AIInsights.tsx';
-import { ChitSettings } from './components/ChitSettings.tsx';
-import { Login } from './components/Login.tsx';
+import { Layout } from './components/Layout';
+import { Dashboard } from './components/Dashboard';
+import { PaymentGrid } from './components/PaymentGrid';
+import { MemberList } from './components/MemberList';
+import { AIInsights } from './components/AIInsights';
+import { ChitSettings } from './components/ChitSettings';
+import { Login } from './components/Login';
 import { AppData, PaymentStatus, Member, UserRole, AuthState, PaymentMethod } from './types';
 import { calculatePaymentDate } from './utils/dateUtils';
 
@@ -160,35 +160,33 @@ const App: React.FC = () => {
       userName={auth.userName}
       onLogout={handleLogout}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'dashboard' && <Dashboard data={data} />}
-        {activeTab === 'payments' && (
-          <PaymentGrid 
-            data={data} 
-            userRole={auth.role}
-            onUpdateStatus={handleUpdatePayment} 
-            onUpdateAuction={handleUpdateAuction}
-          />
-        )}
-        {activeTab === 'members' && (
-          <MemberList 
-            members={data.members} 
-            userRole={auth.role}
-            onAddMember={handleAddMember} 
-            onUpdateMember={handleUpdateMember}
-            onDeleteMember={handleDeleteMember}
-          />
-        )}
-        {activeTab === 'ai' && <AIInsights data={data} userRole={auth.role} />}
-        {activeTab === 'settings' && (
-          <ChitSettings 
-            config={data.config} 
-            userRole={auth.role}
-            onUpdateConfig={handleUpdateConfig}
-            onLogout={handleLogout}
-          />
-        )}
-      </div>
+      {activeTab === 'dashboard' && <Dashboard data={data} />}
+      {activeTab === 'payments' && (
+        <PaymentGrid 
+          data={data} 
+          userRole={auth.role}
+          onUpdateStatus={handleUpdatePayment} 
+          onUpdateAuction={handleUpdateAuction}
+        />
+      )}
+      {activeTab === 'members' && (
+        <MemberList 
+          members={data.members} 
+          userRole={auth.role}
+          onAddMember={handleAddMember} 
+          onUpdateMember={handleUpdateMember}
+          onDeleteMember={handleDeleteMember}
+        />
+      )}
+      {activeTab === 'ai' && <AIInsights data={data} userRole={auth.role} />}
+      {activeTab === 'settings' && (
+        <ChitSettings 
+          config={data.config} 
+          userRole={auth.role}
+          onUpdateConfig={handleUpdateConfig}
+          onLogout={handleLogout}
+        />
+      )}
     </Layout>
   );
 };
