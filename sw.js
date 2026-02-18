@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'chittrack-pro-v4';
+const CACHE_NAME = 'chittrack-pro-v5';
 const OFFLINE_URL = './index.html';
 
 // Critical assets to cache immediately on install
@@ -14,7 +14,7 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Installing new service worker...');
+      console.log('Installing new service worker v5...');
       return cache.addAll(STATIC_ASSETS);
     })
   );
