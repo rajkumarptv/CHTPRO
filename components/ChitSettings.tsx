@@ -1,19 +1,21 @@
 
 import React, { useState } from 'react';
-import { ChitConfig, UserRole } from '../types';
-import { Save, Info, Check, LogOut, Lock, ShieldCheck, Calendar, Wallet } from 'lucide-react';
+import { ChitConfig, UserRole, AppData } from '../types';
+import { Save, Info, Check, LogOut, Lock, ShieldCheck, Calendar, Wallet, Share2, Copy } from 'lucide-react';
 
 interface ChitSettingsProps {
   config: ChitConfig;
+  data: AppData;
   userRole: UserRole;
   onUpdateConfig: (config: any) => void;
   onLogout: () => void;
 }
 
-export const ChitSettings: React.FC<ChitSettingsProps> = ({ config, userRole, onUpdateConfig, onLogout }) => {
+export const ChitSettings: React.FC<ChitSettingsProps> = ({ config, data, userRole, onUpdateConfig, onLogout }) => {
   const isAdmin = userRole === UserRole.ADMIN;
   const [formData, setFormData] = useState(config);
   const [saved, setSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +23,16 @@ export const ChitSettings: React.FC<ChitSettingsProps> = ({ config, userRole, on
     onUpdateConfig(formData);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
+  };
+
+  const generateSyncLink = () => {
+    const jsonString = JSON.stringify(data);
+    const encoded = btoa(encodeURIComponent(jsonString));
+    const url = `${window.location.origin}${window.location.pathname}#data=${encoded}`;
+    
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   return (
@@ -38,6 +50,38 @@ export const ChitSettings: React.FC<ChitSettingsProps> = ({ config, userRole, on
             <span>Sign Out</span>
           </button>
       </div>
+
+      {/* Share Sync Link Section - CRITICAL FOR SYNC */}
+      {isAdmin && (
+        <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-8 text-white shadow-xl shadow-indigo-100 border border-indigo-500">
+           <div className="flex items-center space-x-4 mb-6">
+              <div className="p-3 bg-white/20 rounded-2xl">
+                 <Share2 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black uppercase italic tracking-tight">Share Access</h3>
+                <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-[0.2em] mt-0.5">Sync data with other members</p>
+              </div>
+           </div>
+           
+           <p className="text-xs font-medium text-indigo-50/80 mb-8 leading-relaxed">
+             Since this app runs offline, you must generate a **Sync Link** whenever you update member payments. Send this link to your group so their mobile phones can see your latest records.
+           </p>
+
+           <button 
+             onClick={generateSyncLink}
+             className={`w-full py-4 rounded-2xl flex items-center justify-center space-x-3 font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-lg ${
+               copied ? 'bg-emerald-500 text-white' : 'bg-white text-indigo-700 hover:bg-indigo-50'
+             }`}
+           >
+             {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+             <span>{copied ? 'Link Copied to Clipboard' : 'Generate & Copy Sync Link'}</span>
+           </button>
+           <p className="text-[9px] text-center text-indigo-200 font-black uppercase tracking-widest mt-4 italic">
+             Copy this link and send it via WhatsApp to your group.
+           </p>
+        </div>
+      )}
 
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-8 border-b border-slate-100 flex items-center justify-between">
